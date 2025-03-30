@@ -1,28 +1,42 @@
-// Contains flowchart model for the database
+import mongoose from "mongoose";
+import coldEmailSchema from "./nodes/coldEmail.js";
+import waitDelaySchema from "./nodes/waitDelay.js";
+import leadSourceSchema from "./nodes/leadSource.js";
 
-const mongoose = require("mongoose");
+// Define edge schema
+const edgeSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true },
+    source: { type: String, required: true },
+    target: { type: String, required: true },
+  },
+  { _id: false }
+);
 
-const flowSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  flowName: { type: String, required: true },
-  nodes: [
-    {
-      id: { type: String, required: true },
-      type: {
-        type: String,
-        enum: ["coldEmail", "waitDelay", "leadSource"],
-        required: true,
-      },
-      data: mongoose.Schema.Types.Mixed,
+// Main flow schema
+const flowSchema = new mongoose.Schema(
+  {
+    // User reference
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-  ],
-  edges: [
-    {
-      id: { type: String, required: true },
-      source: { type: String, required: true },
-      target: { type: String, required: true },
-    },
-  ],
-});
+    flowName: { type: String, required: true },
 
-module.exports = mongoose.model("Flow", flowSchema);
+    // Store nodes based on their type
+    nodes: [mongoose.Schema.Types.Mixed], // Will store all node types
+
+    // Connections between nodes
+    edges: [edgeSchema],
+
+    // For tracking scheduled jobs
+    scheduledJobs: [String],
+  },
+  { timestamps: true }
+);
+
+const Flow = mongoose.model("Flow", flowSchema);
+
+export { ColdEmail, WaitDelay, LeadSource };
+export default Flow;
