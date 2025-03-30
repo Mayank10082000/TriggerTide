@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import agenda from "../lib/emailScheduler.js";
-import { scheduleFlowEmails } from "../lib/emailScheduler.js";
 
+// Define the base node schema shape
 const baseNodeSchema = new mongoose.Schema(
   {
     id: { type: String, required: true },
@@ -14,52 +13,12 @@ const baseNodeSchema = new mongoose.Schema(
       x: { type: Number, required: true },
       y: { type: Number, required: true },
     },
+    data: { type: mongoose.Schema.Types.Mixed, required: true },
   },
-  { discriminatorKey: "type", _id: false }
+  { _id: false } // Don't create _id for embedded documents
 );
 
-const NodeSchema = new mongoose.Schema({
-  data: mongoose.Schema.Types.Mixed,
-});
-
-const BaseNode = mongoose.model("Node", baseNodeSchema);
-
-// Create discriminators
-const ColdEmailNode = BaseNode.discriminator(
-  "coldEmail",
-  new mongoose.Schema({
-    data: {
-      subject: { type: String, required: true },
-      body: { type: String, required: true },
-      recipient: String,
-    },
-  })
-);
-
-const WaitDelayNode = BaseNode.discriminator(
-  "waitDelay",
-  new mongoose.Schema({
-    data: {
-      delayTime: { type: Number, required: true },
-      delayUnit: {
-        type: String,
-        enum: ["minutes", "hours", "days"],
-        default: "minutes",
-      },
-    },
-  })
-);
-
-const LeadSourceNode = BaseNode.discriminator(
-  "leadSource",
-  new mongoose.Schema({
-    data: {
-      sourceName: { type: String, required: true },
-      email: { type: String },
-    },
-  })
-);
-
+// Define the flow schema with embedded nodes
 const FlowSchema = new mongoose.Schema(
   {
     userId: {
@@ -80,6 +39,47 @@ const FlowSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Add validation for the specific node types
+FlowSchema.pre("validate", function (next) {
+  // Validate each node based on its type
+  if (this.nodes) {
+    for (const node of this.nodes) {
+      if (node.type === "coldEmail") {
+        // Validate cold email nodes
+        if (!node.data || !node.data.subject || !node.data.body) {
+          return next(
+            new Error(`Cold email node requires subject and body: ${node.id}`)
+          );
+        }
+      } else if (node.type === "waitDelay") {
+        // Validate wait/delay nodes
+        if (!node.data || typeof node.data.delayTime !== "number") {
+          return next(
+            new Error(
+              `Wait/delay node requires a numeric delayTime: ${node.id}`
+            )
+          );
+        }
+        // Validate delayUnit if provided
+        if (
+          node.data.delayUnit &&
+          !["minutes", "hours", "days"].includes(node.data.delayUnit)
+        ) {
+          return next(new Error(`Invalid delay unit in node: ${node.id}`));
+        }
+      } else if (node.type === "leadSource") {
+        // Validate lead source nodes
+        if (!node.data || !node.data.sourceName) {
+          return next(
+            new Error(`Lead source node requires a sourceName: ${node.id}`)
+          );
+        }
+      }
+    }
+  }
+  next();
+});
 
 const Flow = mongoose.model("Flow", FlowSchema);
 

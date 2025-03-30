@@ -28,55 +28,104 @@ agenda.define("send email", async (job) => {
 });
 
 export const scheduleFlowEmails = async (flow) => {
-  const { nodes, edges } = flow;
-  const nodeMap = new Map(nodes.map((node) => [node.id, node]));
-  const edgeMap = new Map(edges.map((edge) => [edge.source, edge.target]));
-  const scheduledJobs = [];
+  try {
+    console.log("Starting to schedule emails for flow:", flow._id);
+    const { nodes, edges } = flow;
 
-  // Start from all lead sources
-  for (const node of nodes) {
-    if (node.type === "leadSource") {
-      let currentNode = node;
-      let cumulativeDelay = 0;
-      const visitedNodes = new Set();
+    // Create a more detailed map of your nodes
+    const nodeMap = {};
+    nodes.forEach((node) => {
+      nodeMap[node.id] = node;
+      console.log(`Adding node to map: ${node.id}, type: ${node.type}`);
+    });
 
-      while (currentNode && !visitedNodes.has(currentNode.id)) {
-        visitedNodes.add(currentNode.id);
+    // Create a map of connections
+    const edgeMap = {};
+    edges.forEach((edge) => {
+      edgeMap[edge.source] = edge.target;
+      console.log(`Adding edge: ${edge.source} -> ${edge.target}`);
+    });
 
-        // Process delays
-        if (currentNode.type === "waitDelay") {
-          const { delayTime, delayUnit = "minutes" } = currentNode.data;
-          cumulativeDelay +=
-            delayUnit === "hours"
-              ? delayTime * 60
-              : delayUnit === "days"
-              ? delayTime * 1440
-              : delayTime;
-        }
+    const scheduledJobs = [];
 
-        // Process emails
-        if (currentNode.type === "coldEmail") {
-          const subject = currentNode.data.subject || "No Subject";
-          const body = currentNode.data.body || "No Body";
-          const recipient = node.data.email || currentNode.data.recipient;
+    // Start from all lead sources
+    for (const node of nodes) {
+      if (node.type === "leadSource") {
+        console.log("Processing lead source:", node.id);
+        let currentNode = node;
+        let cumulativeDelay = 0;
+        const visitedNodes = new Set();
 
-          if (recipient) {
-            const job = await agenda.schedule(
-              `in ${cumulativeDelay} minutes`,
-              "send email",
-              { to: recipient, subject, body }
+        while (currentNode && !visitedNodes.has(currentNode.id)) {
+          visitedNodes.add(currentNode.id);
+          console.log(
+            `Processing node: ${currentNode.id}, type: ${currentNode.type}`
+          );
+
+          // Process delays
+          if (currentNode.type === "waitDelay" && currentNode.data) {
+            const { delayTime, delayUnit = "minutes" } = currentNode.data;
+            cumulativeDelay +=
+              delayUnit === "hours"
+                ? delayTime * 60
+                : delayUnit === "days"
+                ? delayTime * 1440
+                : delayTime;
+            console.log(
+              `Added delay: ${delayTime} ${delayUnit}, total: ${cumulativeDelay} minutes`
             );
-            scheduledJobs.push(job.attrs._id.toString());
           }
-        }
 
-        const nextNodeId = edgeMap.get(currentNode.id);
-        currentNode = nodeMap.get(nextNodeId);
+          // Process emails
+          if (currentNode.type === "coldEmail" && currentNode.data) {
+            const subject = currentNode.data.subject || "No Subject";
+            const body = currentNode.data.body || "No Body";
+            const recipient = node.data.email || currentNode.data.recipient;
+
+            console.log(
+              `Email details: subject=${subject}, recipient=${recipient}`
+            );
+
+            if (recipient) {
+              try {
+                const job = await agenda.schedule(
+                  `in ${cumulativeDelay} minutes`,
+                  "send email",
+                  { to: recipient, subject, body }
+                );
+                console.log("Job scheduled successfully:", job.attrs._id);
+                scheduledJobs.push(job.attrs._id.toString());
+              } catch (error) {
+                console.error("Failed to schedule job:", error);
+              }
+            } else {
+              console.log("No recipient found for email");
+            }
+          }
+
+          // Get next node safely
+          const nextNodeId = edgeMap[currentNode.id];
+          if (!nextNodeId) {
+            console.log(`No next node found for ${currentNode.id}`);
+            break;
+          }
+
+          const nextNode = nodeMap[nextNodeId];
+          if (!nextNode) {
+            console.log(`Invalid next node ID: ${nextNodeId}`);
+            break;
+          }
+
+          currentNode = nextNode;
+        }
       }
     }
-  }
 
-  return scheduledJobs;
+    return scheduledJobs;
+  } catch (error) {
+    console.error("Error in scheduleFlowEmails:", error);
+    return [];
+  }
 };
 
 mongoose.connection.once("connected", async () => {
