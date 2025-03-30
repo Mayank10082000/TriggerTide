@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import baseNodeSchema from "./baseNode.js";
+import baseNodeSchema from "./baseNode.model.js";
 
 const coldEmailSchema = new mongoose.Schema({
   ...baseNodeSchema,

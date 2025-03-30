@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
+import flowChartRoutes from "./route/flowchart.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5001;
@@ -22,6 +23,7 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
+app.use("/api/flowchart", flowChartRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

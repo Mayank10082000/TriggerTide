@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import coldEmailSchema from "./nodes/coldEmail.js";
-import waitDelaySchema from "./nodes/waitDelay.js";
-import leadSourceSchema from "./nodes/leadSource.js";
+import coldEmailSchema from "./coldEmail.model.js";
+import waitDelaySchema from "./waitDelay.model.js";
+import leadSourceSchema from "./leadSource.model.js";
 
 // Define edge schema
 const edgeSchema = new mongoose.Schema(
@@ -36,7 +36,14 @@ const flowSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create the models from the schemas
+const ColdEmail = mongoose.model("ColdEmail", coldEmailSchema);
+const WaitDelay = mongoose.model("WaitDelay", waitDelaySchema);
+const LeadSource = mongoose.model("LeadSource", leadSourceSchema);
+
+// Create the Flow model
 const Flow = mongoose.model("Flow", flowSchema);
 
+// Export all models
 export { ColdEmail, WaitDelay, LeadSource };
 export default Flow;
