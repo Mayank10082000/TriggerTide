@@ -29,65 +29,50 @@ agenda.define("send email", async (job) => {
 
 export const scheduleFlowEmails = async (flow) => {
   const { nodes, edges } = flow;
+  const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+  const edgeMap = new Map(edges.map((edge) => [edge.source, edge.target]));
   const scheduledJobs = [];
 
-  // Find lead source nodes (starting points)
-  const leadSources = nodes.filter((node) => node.type === "leadSource");
+  // Start from all lead sources
+  for (const node of nodes) {
+    if (node.type === "leadSource") {
+      let currentNode = node;
+      let cumulativeDelay = 0;
+      const visitedNodes = new Set();
 
-  for (const leadSource of leadSources) {
-    // Start with the lead source node
-    let currentNodeId = leadSource.id;
-    let cumulativeDelay = 0; // in minutes
+      while (currentNode && !visitedNodes.has(currentNode.id)) {
+        visitedNodes.add(currentNode.id);
 
-    // Process each node in the path
-    while (currentNodeId) {
-      // Find outgoing edge from current node
-      const edge = edges.find((e) => e.source === currentNodeId);
-      if (!edge) break; // End of path
-
-      // Find the next node
-      const nextNode = nodes.find((n) => n.id === edge.target);
-      if (!nextNode) break; // Node not found
-
-      // If it's a wait/delay node, add to cumulative delay
-      if (nextNode.type === "waitDelay") {
-        const { delayTime, delayUnit = "minutes" } = nextNode.data;
-
-        // Convert to minutes
-        if (delayUnit === "hours") {
-          cumulativeDelay += delayTime * 60;
-        } else if (delayUnit === "days") {
-          cumulativeDelay += delayTime * 60 * 24;
-        } else {
-          cumulativeDelay += delayTime;
+        // Process delays
+        if (currentNode.type === "waitDelay") {
+          const { delayTime, delayUnit = "minutes" } = currentNode.data;
+          cumulativeDelay +=
+            delayUnit === "hours"
+              ? delayTime * 60
+              : delayUnit === "days"
+              ? delayTime * 1440
+              : delayTime;
         }
-      }
 
-      // If it's an email node, schedule it
-      if (nextNode.type === "coldEmail") {
-        const { subject, body } = nextNode.data;
+        // Process emails
+        if (currentNode.type === "coldEmail") {
+          const subject = currentNode.data.subject || "No Subject";
+          const body = currentNode.data.body || "No Body";
+          const recipient = node.data.email || currentNode.data.recipient;
 
-        // Use the recipient email from the lead source node
-        const emailRecipient = leadSource.data && leadSource.data.email;
-
-        if (emailRecipient) {
-          // Schedule the email with the accumulated delay
-          const job = await agenda.schedule(
-            `in ${cumulativeDelay} minutes`,
-            "send email",
-            {
-              to: emailRecipient,
-              subject,
-              body,
-            }
-          );
-
-          scheduledJobs.push(job.attrs._id.toString());
+          if (recipient) {
+            const job = await agenda.schedule(
+              `in ${cumulativeDelay} minutes`,
+              "send email",
+              { to: recipient, subject, body }
+            );
+            scheduledJobs.push(job.attrs._id.toString());
+          }
         }
-      }
 
-      // Move to the next node
-      currentNodeId = nextNode.id;
+        const nextNodeId = edgeMap.get(currentNode.id);
+        currentNode = nodeMap.get(nextNodeId);
+      }
     }
   }
 
