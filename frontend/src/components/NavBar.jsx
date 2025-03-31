@@ -12,87 +12,78 @@ const NavBar = () => {
   }, [location]);
 
   return (
-    <nav className="bg-gradient-to-r from-indigo-900 to-purple-900 text-white shadow-md py-4 fixed top-0 left-0 w-full z-50">
+    <nav className="bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg fixed top-0 left-0 w-full z-50 border-b-2 border-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          {/* Logo and brand with custom project icon */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo and Brand */}
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
               <img src="/icon.png" alt="Project Icon" className="h-10 w-10" />
               <span
-                className="text-2xl font-bold text-white tracking-wider"
-                style={{
-                  fontFamily: "'Press Start 2P', cursive",
-                  textShadow: "1px 1px 0 rgba(0, 0, 0, 0.8)",
-                }}
+                className="ml-2 text-xl font-bold text-white"
+                style={{ fontFamily: "'Roboto', sans-serif" }}
               >
                 Trigger Tide
               </span>
             </Link>
           </div>
 
-          {/* Auth buttons on desktop */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link
               to="/login"
-              className="inline-flex items-center bg-indigo-700 border-2 border-cyan-400 px-4 py-1 text-sm font-medium text-white shadow-[3px_3px_0px_0px_rgba(6,182,212,0.8)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0px_0px_rgba(6,182,212,0.8)] transition-all duration-150"
+              className="flex items-center px-4 py-2 text-white border border-white rounded-md hover:bg-white hover:text-blue-500 transition transform hover:scale-105"
             >
-              <LogIn className="h-4 w-4 mr-1" />
+              <LogIn className="h-5 w-5 mr-2" />
               LOGIN
             </Link>
-
             <Link
               to="/signup"
-              className="inline-flex items-center bg-cyan-700 border-2 border-yellow-400 px-4 py-1 text-sm font-medium text-white shadow-[3px_3px_0px_0px_rgba(250,204,21,0.8)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0px_0px_rgba(250,204,21,0.8)] transition-all duration-150"
+              className="flex items-center px-4 py-2 bg-white text-blue-500 rounded-md shadow-md hover:shadow-lg transition transform hover:scale-105"
             >
-              <UserPlus className="h-4 w-4 mr-1" />
+              <UserPlus className="h-5 w-5 mr-2" />
               SIGNUP
             </Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-yellow-300 focus:outline-none"
-              aria-expanded="false"
+              className="text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-transform transform hover:scale-110"
+              aria-label="Toggle Menu"
             >
-              <span className="sr-only">Open main menu</span>
               {isMenuOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
+                <X className="h-6 w-6" />
               ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
+                <Menu className="h-6 w-6" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile Menu */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out ${
-          isMenuOpen ? "block" : "hidden"
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen
+            ? "max-h-40 opacity-100 translate-y-0"
+            : "max-h-0 opacity-0 -translate-y-2"
         }`}
       >
-        <div className="px-2 pt-2 pb-3 space-y-3 mt-2 mx-4 bg-gray-900 border-2 border-cyan-400 shadow-[4px_4px_0px_0px_rgba(6,182,212,0.5)]">
-          {/* Mobile auth buttons */}
-          <div className="pt-2 flex flex-col space-y-2">
-            <Link
-              to="/login"
-              className="flex items-center bg-indigo-700 border-2 border-cyan-400 px-4 py-1 text-base font-medium text-white shadow-[3px_3px_0px_0px_rgba(6,182,212,0.8)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0px_0px_rgba(6,182,212,0.8)] transition-all duration-150"
-            >
-              <LogIn className="h-4 w-4 mr-2" />
-              LOGIN
-            </Link>
-
-            <Link
-              to="/signup"
-              className="flex items-center bg-cyan-700 border-2 border-yellow-400 px-4 py-1 text-base font-medium text-white shadow-[3px_3px_0px_0px_rgba(250,204,21,0.8)] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0px_0px_rgba(250,204,21,0.8)] transition-all duration-150 mb-2"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              SIGNUP
-            </Link>
-          </div>
+        <div className="px-2 pt-2 pb-3 space-y-1 bg-gradient-to-r from-blue-500 to-purple-500 border-t-2 border-white">
+          <Link
+            to="/login"
+            className="block px-3 py-2 rounded-md text-white border border-white hover:bg-white hover:text-blue-500 transition transform hover:scale-105"
+          >
+            LOGIN
+          </Link>
+          <Link
+            to="/signup"
+            className="block px-3 py-2 rounded-md bg-white text-blue-500 text-center shadow-md hover:shadow-lg transition transform hover:scale-105"
+          >
+            SIGNUP
+          </Link>
         </div>
       </div>
     </nav>
