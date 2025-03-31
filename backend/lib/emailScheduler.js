@@ -1,13 +1,17 @@
-import Agenda from "agenda";
+import { Agenda } from "@hokify/agenda";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 
+// Create Agenda instance with MongoDB connection
 const agenda = new Agenda({
-  mongo: mongoose.connection, // Use the existing mongoose connection
-  collection: "jobs", // Store jobs in a separate collection
+  db: {
+    address: process.env.MONGODB_URI,
+    collection: "jobs",
+  },
   processEvery: "1 minute",
 });
 
+// Configure email transporter
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
   auth: {
@@ -16,104 +20,82 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-agenda.define("send email", async (job) => {
-  const { to, subject, body } = job.attrs.data;
+// Define the email sending job
+// Note: In AgendaTS, the function is the 2nd parameter, options is 3rd
+agenda.define(
+  "send email",
+  async (job) => {
+    const { to, subject, body } = job.attrs.data;
 
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    to,
-    subject,
-    html: body,
-  });
-});
+    await transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to,
+      subject,
+      html: body,
+    });
+  },
+  { priority: "high", concurrency: 10 }
+);
 
 export const scheduleFlowEmails = async (flow) => {
   try {
-    console.log("Starting to schedule emails for flow:", flow._id);
     const { nodes, edges } = flow;
-
-    // Create a more detailed map of your nodes
-    const nodeMap = {};
-    nodes.forEach((node) => {
-      nodeMap[node.id] = node;
-      console.log(`Adding node to map: ${node.id}, type: ${node.type}`);
-    });
-
-    // Create a map of connections
-    const edgeMap = {};
-    edges.forEach((edge) => {
-      edgeMap[edge.source] = edge.target;
-      console.log(`Adding edge: ${edge.source} -> ${edge.target}`);
-    });
-
     const scheduledJobs = [];
+
+    // Create maps for quick access
+    const nodeMap = nodes.reduce((map, node) => {
+      map[node.id] = node;
+      return map;
+    }, {});
+
+    const edgeMap = edges.reduce((map, edge) => {
+      map[edge.source] = edge.target;
+      return map;
+    }, {});
 
     // Start from all lead sources
     for (const node of nodes) {
       if (node.type === "leadSource") {
-        console.log("Processing lead source:", node.id);
+        const leadEmail = node.data.email;
+        if (!leadEmail) continue;
+
         let currentNode = node;
         let cumulativeDelay = 0;
-        const visitedNodes = new Set();
 
-        while (currentNode && !visitedNodes.has(currentNode.id)) {
-          visitedNodes.add(currentNode.id);
-          console.log(
-            `Processing node: ${currentNode.id}, type: ${currentNode.type}`
-          );
+        // Walk through the connected nodes
+        while (currentNode && edgeMap[currentNode.id]) {
+          const nextNodeId = edgeMap[currentNode.id];
+          const nextNode = nodeMap[nextNodeId];
 
-          // Process delays
-          if (currentNode.type === "waitDelay" && currentNode.data) {
+          if (!nextNode) break;
+
+          // Handle delay nodes
+          if (currentNode.type === "waitDelay") {
             const { delayTime, delayUnit = "minutes" } = currentNode.data;
-            cumulativeDelay +=
+            // Convert to minutes based on unit
+            const delayInMinutes =
               delayUnit === "hours"
                 ? delayTime * 60
                 : delayUnit === "days"
                 ? delayTime * 1440
                 : delayTime;
-            console.log(
-              `Added delay: ${delayTime} ${delayUnit}, total: ${cumulativeDelay} minutes`
+
+            cumulativeDelay += delayInMinutes;
+          }
+
+          // Handle email nodes
+          if (nextNode.type === "coldEmail") {
+            const { subject, body } = nextNode.data;
+            const recipient = nextNode.data.recipient || leadEmail;
+
+            // Schedule the email with AgendaTS
+            const job = await agenda.schedule(
+              `in ${cumulativeDelay} minutes`,
+              "send email",
+              { to: recipient, subject, body }
             );
-          }
 
-          // Process emails
-          if (currentNode.type === "coldEmail" && currentNode.data) {
-            const subject = currentNode.data.subject || "No Subject";
-            const body = currentNode.data.body || "No Body";
-            const recipient = node.data.email || currentNode.data.recipient;
-
-            console.log(
-              `Email details: subject=${subject}, recipient=${recipient}`
-            );
-
-            if (recipient) {
-              try {
-                const job = await agenda.schedule(
-                  `in ${cumulativeDelay} minutes`,
-                  "send email",
-                  { to: recipient, subject, body }
-                );
-                console.log("Job scheduled successfully:", job.attrs._id);
-                scheduledJobs.push(job.attrs._id.toString());
-              } catch (error) {
-                console.error("Failed to schedule job:", error);
-              }
-            } else {
-              console.log("No recipient found for email");
-            }
-          }
-
-          // Get next node safely
-          const nextNodeId = edgeMap[currentNode.id];
-          if (!nextNodeId) {
-            console.log(`No next node found for ${currentNode.id}`);
-            break;
-          }
-
-          const nextNode = nodeMap[nextNodeId];
-          if (!nextNode) {
-            console.log(`Invalid next node ID: ${nextNodeId}`);
-            break;
+            scheduledJobs.push(job.attrs._id.toString());
           }
 
           currentNode = nextNode;
@@ -128,6 +110,7 @@ export const scheduleFlowEmails = async (flow) => {
   }
 };
 
+// Start agenda when MongoDB connects
 mongoose.connection.once("connected", async () => {
   console.log("Starting Agenda job scheduler...");
   await agenda.start();

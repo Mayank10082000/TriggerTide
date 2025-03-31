@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import flowChartRoutes from "./route/flowchart.route.js";
+// Import agenda to ensure it's initialized
+import "./lib/emailScheduler.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5001;
