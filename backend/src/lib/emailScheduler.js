@@ -102,7 +102,7 @@ export const scheduleFlowEmails = async (flow) => {
                 { to: recipient, subject, body }
               );
 
-              scheduledJobs.push(job.attrs._id.toString());
+              scheduledJobs.push(job.attrs._id);
             }
 
             currentNode = nextNode;

@@ -35,7 +35,7 @@ const FlowSchema = new mongoose.Schema(
         target: { type: String, required: true },
       },
     ],
-    scheduledJobs: [String],
+    scheduledJobs: [mongoose.Schema.Types.ObjectId],
   },
   { timestamps: true }
 );
