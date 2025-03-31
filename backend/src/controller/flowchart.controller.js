@@ -152,7 +152,7 @@ export const getFlowChartById = async (req, res) => {
     const { flowId } = req.params;
     const userId = req.user._id;
 
-    if (!id) {
+    if (!flowId) {
       return res.status(400).json({ message: "Flow ID is required" });
     }
 
