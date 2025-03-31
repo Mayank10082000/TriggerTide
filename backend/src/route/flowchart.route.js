@@ -3,14 +3,18 @@ import express from "express";
 import {
   createFlowchart,
   updateFlowchart,
-  deleteFlowchart,
+  getAllFlowcharts,
+  getFlowChartById,
+  deleteFlowChart,
 } from "../controller/flowchart.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 router.post("/create", protectRoute, createFlowchart);
-router.put("/update/:id", protectRoute, updateFlowchart);
-router.delete("/delete/:id", protectRoute, deleteFlowchart);
+router.put("/update/:flowId", protectRoute, updateFlowchart);
+router.delete("/delete/:flowId", protectRoute, deleteFlowChart);
+router.get("/all", protectRoute, getAllFlowcharts);
+router.get("/:id", protectRoute, getFlowChartById);
 
 export default router;
