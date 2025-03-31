@@ -15,6 +15,6 @@ router.post("/create", protectRoute, createFlowchart);
 router.put("/update/:flowId", protectRoute, updateFlowchart);
 router.delete("/delete/:flowId", protectRoute, deleteFlowChart);
 router.get("/all", protectRoute, getAllFlowcharts);
-router.get("/:id", protectRoute, getFlowChartById);
+router.get("/:flowId", protectRoute, getFlowChartById);
 
 export default router;

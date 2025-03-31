@@ -149,14 +149,14 @@ export const getAllFlowcharts = async (req, res) => {
 
 export const getFlowChartById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { flowId } = req.params;
     const userId = req.user._id;
 
     if (!id) {
       return res.status(400).json({ message: "Flow ID is required" });
     }
 
-    const flow = await Flow.findOne({ _id: id, userId });
+    const flow = await Flow.findOne({ _id: flowId, userId });
 
     if (!flow) {
       return res.status(404).json({ message: "Flow not found" });
