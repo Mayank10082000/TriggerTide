@@ -49,7 +49,8 @@ export const updateFlowchart = async (req, res) => {
     const { flowId } = req.params; // This should match the :id in your route
     const { flowName, nodes, edges } = req.body;
 
-    if (!id) return res.status(400).json({ message: "Flow ID is required" });
+    if (!flowId)
+      return res.status(400).json({ message: "Flow ID is required" });
     if (!flowName)
       return res.status(400).json({ message: "Flow name is required" });
     if (!nodes || !Array.isArray(nodes))
