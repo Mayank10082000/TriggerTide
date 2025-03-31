@@ -44,7 +44,8 @@ export const createFlowchart = async (req, res) => {
 export const updateFlowchart = async (req, res) => {
   try {
     // Validate required fields
-    const { flowId, flowName, nodes, edges } = req.body;
+    const { flowId } = req.params;
+    const { flowName, nodes, edges } = req.body;
 
     if (!flowId)
       return res.status(400).json({ message: "Flow ID is required" });

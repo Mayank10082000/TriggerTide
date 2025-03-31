@@ -21,7 +21,6 @@ const transporter = nodemailer.createTransport({
 });
 
 // Define the email sending job
-// Note: In AgendaTS, the function is the 2nd parameter, options is 3rd
 agenda.define(
   "send email",
   async (job) => {
