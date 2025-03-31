@@ -1,13 +1,13 @@
 import express from "express";
-import authRoutes from "./route/auth.route.js";
-import { connectDB } from "./lib/db.js";
+import authRoutes from "./src/route/auth.route.js";
+import { connectDB } from "./src/lib/db.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
-import flowChartRoutes from "./route/flowchart.route.js";
+import flowChartRoutes from "./src/route/flowchart.route.js";
 // Import agenda to ensure it's initialized
-import "./lib/emailScheduler.js";
+import "./src/lib/emailScheduler.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 5001;

@@ -91,35 +91,6 @@ export const logout = async (req, res) => {
   }
 };
 
-export const updateProfile = async (req, res) => {
-  try {
-    const { profilePic } = req.body;
-    const userId = req.user._id;
-
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile picture is required" });
-    }
-
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uploadResponse.secure_url },
-      { new: true }
-    );
-
-    res.status(200).json({
-      _id: updatedUser._id,
-      fullName: updatedUser.fullName,
-      email: updatedUser.email,
-      profilePic: updatedUser.profilePic,
-      createdAt: updatedUser.createdAt,
-    });
-  } catch (error) {
-    console.log("Error in updateProfile controller:", error.message);
-    res.status(500).json({ message: "Internal Server error" });
-  }
-};
-
 export const checkAuth = async (req, res) => {
   try {
     const user = req.user;
@@ -175,7 +146,8 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    const { resetToken, newPassword } = req.body;
+    const { requesToken } = req.params; // Extract token from URL params
+    const { newPassword } = req.body;
 
     if (!resetToken || !newPassword) {
       return res.status(400).json({ message: "All fields are required" });

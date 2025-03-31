@@ -13,9 +13,9 @@ const baseNodeSchema = new mongoose.Schema(
       x: { type: Number, required: true },
       y: { type: Number, required: true },
     },
-    data: { type: mongoose.Schema.Types.Mixed, required: true },
+    data: { type: mongoose.Schema.Types.Mixed, required: true }, // Data type mixed gives flexibility for different format of data from the frontend
   },
-  { _id: false } // Don't create _id for embedded documents
+  { _id: false } // Don't create _id for embedded documents as it will take extra space and we wont be accessing them individually
 );
 
 // Define the flow schema with embedded nodes

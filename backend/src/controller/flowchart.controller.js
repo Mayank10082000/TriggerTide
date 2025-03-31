@@ -44,11 +44,10 @@ export const createFlowchart = async (req, res) => {
 export const updateFlowchart = async (req, res) => {
   try {
     // Validate required fields
-    const { flowId } = req.params;
+    const { id } = req.params; // This should match the :id in your route
     const { flowName, nodes, edges } = req.body;
 
-    if (!flowId)
-      return res.status(400).json({ message: "Flow ID is required" });
+    if (!id) return res.status(400).json({ message: "Flow ID is required" });
     if (!flowName)
       return res.status(400).json({ message: "Flow name is required" });
     if (!nodes || !Array.isArray(nodes))
@@ -56,20 +55,35 @@ export const updateFlowchart = async (req, res) => {
     if (!edges || !Array.isArray(edges))
       return res.status(400).json({ message: "Edges array is required" });
 
-    // Update flow directly from req.body
-    const flow = await Flow.findByIdAndUpdate(
-      flowId,
-      {
-        flowName,
-        nodes,
-        edges,
-      },
-      { new: true }
-    );
+    // First fetch the existing flow
+    const existingFlow = await Flow.findById(id);
+
+    if (!existingFlow) {
+      return res.status(404).json({ message: "Flow not found" });
+    }
+
+    // Cancel existing jobs
+    if (existingFlow.scheduledJobs && existingFlow.scheduledJobs.length > 0) {
+      for (const jobId of existingFlow.scheduledJobs) {
+        await agenda.cancel({ _id: jobId });
+      }
+    }
+
+    // Update flow with new data
+    existingFlow.flowName = flowName;
+    existingFlow.nodes = nodes;
+    existingFlow.edges = edges;
+
+    // Schedule new jobs
+    const jobIds = await scheduleFlowEmails(existingFlow);
+    existingFlow.scheduledJobs = jobIds;
+
+    // Save the updated flow
+    await existingFlow.save();
 
     res.status(200).json({
       message: "Flow updated successfully",
-      data: flow,
+      data: existingFlow,
     });
   } catch (error) {
     console.error("Error in updateFlow controller:", error);
