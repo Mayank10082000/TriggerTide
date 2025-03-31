@@ -93,14 +93,13 @@ export const updateFlowchart = async (req, res) => {
 
 export const deleteFlowchart = async (req, res) => {
   try {
-    // Validate required fields
-    const { flowId } = req.body;
+    // Get ID from URL parameters instead of request body
+    const { id } = req.params;
 
-    if (!flowId)
-      return res.status(400).json({ message: "Flow ID is required" });
+    if (!id) return res.status(400).json({ message: "Flow ID is required" });
 
     // Find the flow first to check if it exists and to get access to its data
-    const flow = await Flow.findById(flowId);
+    const flow = await Flow.findById(id);
 
     // Check if flow exists
     if (!flow) {
@@ -115,7 +114,7 @@ export const deleteFlowchart = async (req, res) => {
     }
 
     // Delete the flow
-    await Flow.findByIdAndDelete(flowId);
+    await Flow.findByIdAndDelete(id);
 
     res.status(200).json({
       message: "Flow deleted successfully",
