@@ -2,12 +2,14 @@ import React from "react";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import SignupPage from "./pages/SignupPage";
+// import SignupPage from "./pages/SignupPage";
+import HomePage from "./pages/HomePage"; // Added missing import
 import NavBar from "./components/NavBar";
 import { Routes, Route, Navigate } from "react-router-dom";
 import CreateFlowCanvas from "./pages/CreateFlowCanvas";
 import { useAuthStore } from "./store/useAuthStore";
-import { Home, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast"; // Added missing Toaster import
 
 const App = () => {
   const { isCheckingAuth, authUser, checkAuth } = useAuthStore();
@@ -20,8 +22,8 @@ const App = () => {
 
   if (isCheckingAuth && !authUser)
     return (
-      <div>
-        <Loader classname="size-10 animate-spin" />
+      <div className="flex justify-center items-center h-screen">
+        <Loader className="size-10 animate-spin" />
       </div>
     );
 
@@ -34,13 +36,13 @@ const App = () => {
           path="/"
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
-        <Route
+        {/* <Route
           path="/signup"
-          element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
-        />
+          element={!authUser ? <SignupPage /> : <Navigate to="/" />}
+        /> */}
         <Route
           path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+          element={!authUser ? <LoginPage /> : <Navigate to="/login" />}
         />
         <Route
           path="/create-flow"
