@@ -150,9 +150,9 @@ export const forgotPassword = async (req, res) => {
 export const resetPassword = async (req, res) => {
   try {
     const { resetToken } = req.params; // Extract token from URL params
-    const { newPassword } = req.body;
+    const { newPassword, confirmNewPassword } = req.body;
 
-    if (!resetToken || !newPassword) {
+    if (!resetToken || !newPassword || !confirmNewPassword) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -160,6 +160,10 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({
         message: "Password must be at least 6 characters long",
       });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
     const user = await User.findOne({
