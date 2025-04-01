@@ -83,17 +83,8 @@ const LoginPage = () => {
       <div className="w-full max-w-md">
         {/* Card Container */}
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300 border border-white/20">
-          {/* Logo */}
-          <div className="flex justify-center mt-6">
-            <img
-              src="/icon.png"
-              alt="Trigger Tide Logo"
-              className="h-12 w-12 object-contain animate-pulse"
-            />
-          </div>
-
           {/* Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5 mt-4">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5">
             <h2 className="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
               <LogIn className="h-5 w-5" />
               Login to Your Account
