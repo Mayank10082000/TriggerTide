@@ -7,12 +7,12 @@ import toast from "react-hot-toast";
 const ResetPasswordPage = () => {
   const [formData, setFormData] = useState({
     newPassword: "",
-    confirmPassword: "",
+    confirmNewPassword: "",
   });
 
   const [formErrors, setFormErrors] = useState({});
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showconfirmNewPassword, setShowconfirmNewPassword] = useState(false);
 
   const { resetPassword, isResettingPassword, authUser } = useAuthStore();
   const navigate = useNavigate();
@@ -30,12 +30,12 @@ const ResetPasswordPage = () => {
     const errors = {};
 
     // Check if any required field is empty
-    if (!formData.newPassword || !formData.confirmPassword) {
+    if (!formData.newPassword || !formData.confirmNewPassword) {
       // Set individual form errors for UI indicators
       if (!formData.newPassword)
         errors.newPassword = "New password is required";
-      if (!formData.confirmPassword)
-        errors.confirmPassword = "Confirm password is required";
+      if (!formData.confirmNewPassword)
+        errors.confirmNewPassword = "Confirm password is required";
 
       setFormErrors(errors);
       toast.error("All fields are required");
@@ -50,8 +50,8 @@ const ResetPasswordPage = () => {
     }
 
     // Check if passwords match
-    if (formData.newPassword !== formData.confirmPassword) {
-      setFormErrors({ confirmPassword: "Passwords do not match" });
+    if (formData.newPassword !== formData.confirmNewPassword) {
+      setFormErrors({ confirmNewPassword: "Passwords do not match" });
       toast.error("Passwords do not match");
       return false;
     }
@@ -145,7 +145,7 @@ const ResetPasswordPage = () => {
               {/* Confirm Password Field */}
               <div className="space-y-1">
                 <label
-                  htmlFor="confirmPassword"
+                  htmlFor="confirmNewPassword"
                   className="text-xs font-medium text-gray-700 flex items-center gap-1"
                 >
                   <Lock className="h-3 w-3" />
@@ -153,13 +153,13 @@ const ResetPasswordPage = () => {
                 </label>
                 <div className="relative">
                   <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
+                    type={showconfirmNewPassword ? "text" : "password"}
+                    id="confirmNewPassword"
+                    name="confirmNewPassword"
+                    value={formData.confirmNewPassword}
                     onChange={handleChange}
                     className={`w-full px-3 py-2 text-sm border ${
-                      formErrors.confirmPassword
+                      formErrors.confirmNewPassword
                         ? "border-red-500"
                         : "border-gray-300"
                     } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
@@ -168,9 +168,11 @@ const ResetPasswordPage = () => {
                   <button
                     type="button"
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 transition-colors"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    onClick={() =>
+                      setShowconfirmNewPassword(!showconfirmNewPassword)
+                    }
                   >
-                    {showConfirmPassword ? (
+                    {showconfirmNewPassword ? (
                       <EyeOff className="h-4 w-4" />
                     ) : (
                       <Eye className="h-4 w-4" />
