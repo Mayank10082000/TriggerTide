@@ -14,9 +14,9 @@ const ResetPasswordPage = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showconfirmNewPassword, setShowconfirmNewPassword] = useState(false);
 
-  const { resetPassword, isResettingPassword, authUser } = useAuthStore();
+  const { resetPassword, isResetPassword, authUser } = useAuthStore();
   const navigate = useNavigate();
-  const { token } = useParams(); // Get reset token from URL
+  const { resetToken } = useParams(); // Get reset token from URL
 
   useEffect(() => {
     // Redirect to home if already authenticated
@@ -43,7 +43,10 @@ const ResetPasswordPage = () => {
     }
 
     // Validate password length
-    if (formData.newPassword.length < 6) {
+    if (
+      formData.newPassword.length < 6 ||
+      formData.confirmNewPassword.length < 6
+    ) {
       setFormErrors({ newPassword: "Password must be at least 6 characters" });
       toast.error("Password must be at least 6 characters");
       return false;
@@ -74,7 +77,11 @@ const ResetPasswordPage = () => {
 
     const isValid = validateForm();
     if (isValid) {
-      const success = await resetPassword(token, formData.newPassword);
+      const success = await resetPassword(
+        resetToken,
+        formData.newPassword,
+        formData.confirmNewPassword
+      );
       if (success) {
         // Redirect to login page after successful password reset
         navigate("/login");
@@ -184,10 +191,10 @@ const ResetPasswordPage = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isResettingPassword}
+                disabled={isResetPassword}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                {isResettingPassword ? (
+                {isResetPassword ? (
                   <>
                     <Loader className="animate-spin mr-2 h-4 w-4" />
                     Resetting Password...
