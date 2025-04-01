@@ -2,7 +2,7 @@ import React from "react";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-// import SignupPage from "./pages/SignupPage";
+import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage"; // Added missing import
 import NavBar from "./components/NavBar";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -36,10 +36,10 @@ const App = () => {
           path="/"
           element={authUser ? <HomePage /> : <Navigate to="/login" />}
         />
-        {/* <Route
+        <Route
           path="/signup"
           element={!authUser ? <SignupPage /> : <Navigate to="/" />}
-        /> */}
+        />
         <Route
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to="/login" />}
