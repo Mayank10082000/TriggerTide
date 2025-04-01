@@ -5,9 +5,9 @@ import crypto from "crypto";
 import { sendPasswordResetEmail } from "../lib/ResetPasswordEmail.js";
 
 export const signup = async (req, res) => {
-  const { email, fullName, password } = req.body;
+  const { email, fullName, password, confirmPassword } = req.body;
   try {
-    if (!fullName || !email || !password) {
+    if (!fullName || !email || !password || !confirmPassword) {
       return res.status(400).json({ message: "All fields are required" });
     }
     // Hash passwords
@@ -15,6 +15,10 @@ export const signup = async (req, res) => {
       return res.status(400).json({
         message: "Password must be at least 6 characters long",
       });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
     const user = await User.findOne({ email });
@@ -39,7 +43,6 @@ export const signup = async (req, res) => {
         _id: newUser._id,
         fullName: newUser.fullName,
         email: newUser.email,
-        profilePic: newUser.profilePic,
         createdAt: newUser.createdAt,
       });
     } else {
