@@ -134,13 +134,13 @@ export const getAllFlowcharts = async (req, res) => {
 
     const flows = await Flow.find({ userId });
 
-    if (flows.length === 0) {
-      return res.status(404).json({ message: "No flows found for this user" });
-    }
-
+    // Return 200 status regardless of whether flows are found
     res.status(200).json({
-      message: "Flows fetched successfully",
-      data: flows,
+      message:
+        flows.length > 0
+          ? "Flowcharts fetched successfully"
+          : "No flowcharts found",
+      data: flows || [], // Always return an array (empty if no flows)
     });
   } catch (error) {
     console.error("Error in getAllFlows controller:", error);

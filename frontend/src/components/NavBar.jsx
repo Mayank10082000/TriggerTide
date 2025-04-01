@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  LogIn,
-  UserPlus,
-  Menu,
-  X,
-  LogOut,
-  PlusCircle,
-  Home,
-  User,
-} from "lucide-react";
+import { LogIn, UserPlus, Menu, X, LogOut, Home, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -89,19 +80,6 @@ const NavBar = () => {
                 >
                   <Home className="h-5 w-5 mr-2 group-hover:animate-pulse" />
                   HOME
-                </Link>
-                <Link
-                  to="/create-flow"
-                  className={`flex items-center px-4 py-2 rounded-lg shadow-md transition-all duration-300 
-                  transform hover:scale-105 hover:shadow-xl group
-                  ${
-                    isScrolled
-                      ? "bg-green-500 text-white hover:bg-green-600"
-                      : "border border-white text-white hover:bg-white hover:text-green-500"
-                  }`}
-                >
-                  <PlusCircle className="h-5 w-5 mr-2 group-hover:animate-pulse" />
-                  CREATE FLOW
                 </Link>
                 <div className="flex items-center">
                   <User
@@ -220,19 +198,6 @@ const NavBar = () => {
               >
                 <Home className="h-5 w-5 mr-2" />
                 HOME
-              </Link>
-              <Link
-                to="/create-flow"
-                className={`w-full flex items-center px-3 py-2 rounded-md transition-all duration-300 
-                ${
-                  isScrolled
-                    ? "text-green-500 border border-green-500 hover:bg-green-50"
-                    : "text-white border border-white hover:bg-white hover:text-green-500"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <PlusCircle className="h-5 w-5 mr-2" />
-                CREATE FLOW
               </Link>
               <button
                 onClick={handleLogout}
