@@ -11,6 +11,7 @@ import {
   Loader,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import AnimatedAuthBackground from "../components/AnimatedAuthBackground";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -78,12 +79,21 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-10">
+    <AnimatedAuthBackground>
       <div className="w-full max-w-md">
         {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300">
-          {/* Header with Gradient - reduced padding */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5 rounded-t-lg">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300 border border-white/20">
+          {/* Logo */}
+          <div className="flex justify-center mt-6">
+            <img
+              src="/icon.png"
+              alt="Trigger Tide Logo"
+              className="h-12 w-12 object-contain animate-pulse"
+            />
+          </div>
+
+          {/* Header with Gradient */}
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5 mt-4">
             <h2 className="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
               <LogIn className="h-5 w-5" />
               Login to Your Account
@@ -94,9 +104,8 @@ const LoginPage = () => {
           </div>
 
           {/* Form Container */}
-          <div className="p-4">
-            {/* Reduced spacing between form elements */}
-            <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
                 <label
@@ -115,7 +124,7 @@ const LoginPage = () => {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border ${
                       formErrors.email ? "border-red-500" : "border-gray-300"
-                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
+                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white/80 backdrop-blur-sm`}
                     placeholder="your@email.com"
                   />
                   {formErrors.email && (
@@ -144,7 +153,7 @@ const LoginPage = () => {
                     onChange={handleChange}
                     className={`w-full px-4 py-3 border ${
                       formErrors.password ? "border-red-500" : "border-gray-300"
-                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
+                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white/80 backdrop-blur-sm`}
                     placeholder="Enter your password"
                   />
                   <button
@@ -173,7 +182,7 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={isLoggingIn}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center mt-6"
               >
                 {isLoggingIn ? (
                   <>
@@ -189,7 +198,7 @@ const LoginPage = () => {
               </button>
 
               {/* Signup Link */}
-              <div className="text-center mt-3">
+              <div className="text-center mt-4">
                 <p className="text-gray-600 text-sm">
                   Don't have an account?{" "}
                   <Link
@@ -204,7 +213,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedAuthBackground>
   );
 };
 
