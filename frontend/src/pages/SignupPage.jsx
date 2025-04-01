@@ -102,32 +102,32 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 px-4 pt-20 pb-10">
       <div className="w-full max-w-md">
         {/* Card Container */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300">
           {/* Header with Gradient - reduced padding */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5 rounded-t-lg">
-            <h2 className="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
-              <UserPlus className="h-5 w-5" />
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-4 rounded-t-lg">
+            <h2 className="text-lg font-bold text-white text-center flex items-center justify-center gap-2">
+              <UserPlus className="h-4 w-4" />
               Create Your Account
             </h2>
-            <p className="text-blue-100 text-center mt-1 text-sm">
+            <p className="text-blue-100 text-center mt-1 text-xs">
               Join us to start designing your email marketing sequences
             </p>
           </div>
 
           {/* Form Container */}
-          <div className="p-4">
+          <div className="p-3">
             {/* Reduced spacing between form elements */}
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-2">
               {/* Full Name Field */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label
                   htmlFor="fullName"
-                  className="text-sm font-medium text-gray-700 flex items-center gap-1"
+                  className="text-xs font-medium text-gray-700 flex items-center gap-1"
                 >
-                  <User className="h-4 w-4" />
+                  <User className="h-3 w-3" />
                   Full Name
                 </label>
                 <div className="relative">
@@ -137,26 +137,26 @@ const SignupPage = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border ${
+                    className={`w-full px-3 py-2 text-sm border ${
                       formErrors.fullName ? "border-red-500" : "border-gray-300"
                     } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
                     placeholder="Enter your full name"
                   />
                   {formErrors.fullName && (
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      <AlertCircle className="h-5 w-5 text-red-500" />
+                      <AlertCircle className="h-4 w-4 text-red-500" />
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Email Field */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label
                   htmlFor="email"
-                  className="text-sm font-medium text-gray-700 flex items-center gap-1"
+                  className="text-xs font-medium text-gray-700 flex items-center gap-1"
                 >
-                  <Mail className="h-4 w-4" />
+                  <Mail className="h-3 w-3" />
                   Email Address
                 </label>
                 <div className="relative">
@@ -166,26 +166,26 @@ const SignupPage = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border ${
+                    className={`w-full px-3 py-2 text-sm border ${
                       formErrors.email ? "border-red-500" : "border-gray-300"
                     } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
                     placeholder="your@email.com"
                   />
                   {formErrors.email && (
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                      <AlertCircle className="h-5 w-5 text-red-500" />
+                      <AlertCircle className="h-4 w-4 text-red-500" />
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Password Field */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label
                   htmlFor="password"
-                  className="text-sm font-medium text-gray-700 flex items-center gap-1"
+                  className="text-xs font-medium text-gray-700 flex items-center gap-1"
                 >
-                  <Lock className="h-4 w-4" />
+                  <Lock className="h-3 w-3" />
                   Password
                 </label>
                 <div className="relative">
@@ -195,7 +195,7 @@ const SignupPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border ${
+                    className={`w-full px-3 py-2 text-sm border ${
                       formErrors.password ? "border-red-500" : "border-gray-300"
                     } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
                     placeholder="Create a secure password"
@@ -206,24 +206,24 @@ const SignupPage = () => {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
+                      <EyeOff className="h-4 w-4" />
                     ) : (
-                      <Eye className="h-5 w-5" />
+                      <Eye className="h-4 w-4" />
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 -mt-1">
+                <p className="text-[10px] text-gray-500 -mt-1">
                   Password must be at least 6 characters long
                 </p>
               </div>
 
               {/* Confirm Password Field */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label
                   htmlFor="confirmPassword"
-                  className="text-sm font-medium text-gray-700 flex items-center gap-1"
+                  className="text-xs font-medium text-gray-700 flex items-center gap-1"
                 >
-                  <Lock className="h-4 w-4" />
+                  <Lock className="h-3 w-3" />
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -233,7 +233,7 @@ const SignupPage = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 border ${
+                    className={`w-full px-3 py-2 text-sm border ${
                       formErrors.confirmPassword
                         ? "border-red-500"
                         : "border-gray-300"
@@ -246,9 +246,9 @@ const SignupPage = () => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5" />
+                      <EyeOff className="h-4 w-4" />
                     ) : (
-                      <Eye className="h-5 w-5" />
+                      <Eye className="h-4 w-4" />
                     )}
                   </button>
                 </div>
@@ -258,24 +258,24 @@ const SignupPage = () => {
               <button
                 type="submit"
                 disabled={isSigningUp}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isSigningUp ? (
                   <>
-                    <Loader className="animate-spin mr-2 h-5 w-5" />
+                    <Loader className="animate-spin mr-2 h-4 w-4" />
                     Creating Account...
                   </>
                 ) : (
                   <>
-                    <UserPlus className="mr-2 h-5 w-5" />
+                    <UserPlus className="mr-2 h-4 w-4" />
                     Sign Up
                   </>
                 )}
               </button>
 
               {/* Login Link */}
-              <div className="text-center mt-3">
-                <p className="text-gray-600 text-sm">
+              <div className="text-center mt-2">
+                <p className="text-gray-600 text-xs">
                   Already have an account?{" "}
                   <Link
                     to="/login"

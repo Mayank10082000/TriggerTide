@@ -149,7 +149,7 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    const { requesToken } = req.params; // Extract token from URL params
+    const { resetToken } = req.params; // Extract token from URL params
     const { newPassword } = req.body;
 
     if (!resetToken || !newPassword) {
