@@ -77,11 +77,11 @@ const ResetPasswordPage = () => {
 
     const isValid = validateForm();
     if (isValid) {
-      const success = await resetPassword(
+      const success = await resetPassword({
         resetToken,
-        formData.newPassword,
-        formData.confirmNewPassword
-      );
+        newPassword: formData.newPassword,
+        confirmNewPassword: formData.confirmNewPassword,
+      });
       if (success) {
         // Redirect to login page after successful password reset
         navigate("/login");
