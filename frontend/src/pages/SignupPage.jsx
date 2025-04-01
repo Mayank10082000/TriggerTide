@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Loader,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,6 @@ const SignupPage = () => {
   const [formErrors, setFormErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { signup, isSigningUp, authUser } = useAuthStore();
   const navigate = useNavigate();
@@ -36,30 +36,50 @@ const SignupPage = () => {
   }, [authUser, navigate]);
 
   const validateForm = () => {
+    // Reset form errors
     const errors = {};
 
-    if (!formData.fullName.trim()) {
-      errors.fullName = "Full name is required";
+    // Check if any required field is empty
+    if (
+      !formData.fullName.trim() ||
+      !formData.email.trim() ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      // Set individual form errors for UI indicators
+      if (!formData.fullName.trim()) errors.fullName = "Full name is required";
+      if (!formData.email.trim()) errors.email = "Email is required";
+      if (!formData.password) errors.password = "Password is required";
+      if (!formData.confirmPassword)
+        errors.confirmPassword = "Confirm password is required";
+
+      setFormErrors(errors);
+
+      // Show single toast for all empty fields
+      toast.error("All fields are required");
+      return false;
     }
 
-    if (!formData.email) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid";
+    // Continue with other validations (email format, password length, passwords match)
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      setFormErrors({ email: "Email is invalid" });
+      toast.error("Email is invalid");
+      return false;
     }
 
-    if (!formData.password) {
-      errors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+    if (formData.password.length < 6) {
+      setFormErrors({ password: "Password must be at least 6 characters" });
+      toast.error("Password must be at least 6 characters");
+      return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
+      setFormErrors({ confirmPassword: "Passwords do not match" });
+      toast.error("Passwords do not match");
+      return false;
     }
 
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    return true;
   };
 
   const handleChange = (e) => {
@@ -75,31 +95,32 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      // The signup function from useAuthStore already handles toast notifications
+    const isValid = validateForm();
+    if (isValid) {
       await signup(formData);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-20">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 px-4 py-10">
       <div className="w-full max-w-md">
         {/* Card Container */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300">
-          {/* Header with Gradient */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-8 rounded-t-lg">
-            <h2 className="text-2xl font-bold text-white text-center flex items-center justify-center gap-2">
-              <UserPlus className="h-6 w-6" />
+          {/* Header with Gradient - reduced padding */}
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5 rounded-t-lg">
+            <h2 className="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
+              <UserPlus className="h-5 w-5" />
               Create Your Account
             </h2>
-            <p className="text-blue-100 text-center mt-2">
+            <p className="text-blue-100 text-center mt-1 text-sm">
               Join us to start designing your email marketing sequences
             </p>
           </div>
 
           {/* Form Container */}
-          <div className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="p-4">
+            {/* Reduced spacing between form elements */}
+            <form onSubmit={handleSubmit} className="space-y-3">
               {/* Full Name Field */}
               <div className="space-y-2">
                 <label
@@ -127,12 +148,6 @@ const SignupPage = () => {
                     </div>
                   )}
                 </div>
-                {formErrors.fullName && (
-                  <p className="text-red-500 text-xs italic mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {formErrors.fullName}
-                  </p>
-                )}
               </div>
 
               {/* Email Field */}
@@ -162,12 +177,6 @@ const SignupPage = () => {
                     </div>
                   )}
                 </div>
-                {formErrors.email && (
-                  <p className="text-red-500 text-xs italic mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {formErrors.email}
-                  </p>
-                )}
               </div>
 
               {/* Password Field */}
@@ -203,13 +212,7 @@ const SignupPage = () => {
                     )}
                   </button>
                 </div>
-                {formErrors.password && (
-                  <p className="text-red-500 text-xs italic mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {formErrors.password}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 -mt-1">
                   Password must be at least 6 characters long
                 </p>
               </div>
@@ -249,12 +252,6 @@ const SignupPage = () => {
                     )}
                   </button>
                 </div>
-                {formErrors.confirmPassword && (
-                  <p className="text-red-500 text-xs italic mt-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {formErrors.confirmPassword}
-                  </p>
-                )}
               </div>
 
               {/* Submit Button */}
@@ -277,8 +274,8 @@ const SignupPage = () => {
               </button>
 
               {/* Login Link */}
-              <div className="text-center mt-6">
-                <p className="text-gray-600">
+              <div className="text-center mt-3">
+                <p className="text-gray-600 text-sm">
                   Already have an account?{" "}
                   <Link
                     to="/login"
