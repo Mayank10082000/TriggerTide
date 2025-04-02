@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LogIn, UserPlus, Menu, X, LogOut, Home, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import icon from "../assets/icon.png";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,8 +50,8 @@ const NavBar = () => {
               className="flex items-center group transition-transform duration-300 hover:scale-105 cursor-pointer"
             >
               <img
-                src="/icon.png"
-                alt="Project Icon"
+                src={icon}
+                alt="Trigger Tide"
                 className="h-10 w-10 group-hover:rotate-6 transition-transform duration-300"
               />
               <span
