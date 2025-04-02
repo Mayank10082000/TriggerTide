@@ -1,8 +1,16 @@
 import React from "react";
-import { Handle, Position } from "@xyflow/react";
-import { Clock } from "lucide-react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
+import { Clock, Trash2 } from "lucide-react";
 
-const WaitDelayNode = ({ data, isConnectable, selected }) => {
+const WaitDelayNode = ({ id, data, isConnectable, selected }) => {
+  // Add useReactFlow hook
+  const { deleteElements } = useReactFlow();
+
+  // Add handleDelete method
+  const handleDelete = () => {
+    deleteElements({ nodes: [{ id }] });
+  };
+
   const [localData, setLocalData] = React.useState({
     delayTime: data.delayTime || 24,
     delayUnit: data.delayUnit || "hours",
@@ -52,6 +60,15 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
             onClick={preventDrag}
           />
         </div>
+        {/* Add delete button */}
+        <button
+          onClick={handleDelete}
+          className="p-1 hover:bg-white/20 rounded"
+          onMouseDown={(e) => e.stopPropagation()} // Prevent dragging
+          title="Delete Node"
+        >
+          <Trash2 size={16} className="text-white hover:text-red-300" />
+        </button>
       </div>
 
       {/* Node Content */}

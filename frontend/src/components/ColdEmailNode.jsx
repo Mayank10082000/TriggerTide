@@ -1,10 +1,24 @@
 import React, { useState } from "react";
-import { Handle, Position } from "@xyflow/react";
-import { Mail, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
+import {
+  Mail,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  Trash2,
+} from "lucide-react";
 
-const ColdEmailNode = ({ data, isConnectable, selected }) => {
+const ColdEmailNode = ({ id, data, isConnectable, selected }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [recipientError, setRecipientError] = useState("");
+
+  // Add this line to get the reactFlow instance
+  const { deleteElements } = useReactFlow();
+
+  // Add a method to handle node deletion
+  const handleDelete = () => {
+    deleteElements({ nodes: [{ id }] });
+  };
 
   // Create local state for inputs to ensure UI updates immediately
   const [localData, setLocalData] = useState({
@@ -52,13 +66,24 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
           <Mail size={18} />
           <span className="font-medium text-sm">Cold Email</span>
         </div>
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1 hover:bg-white/20 rounded"
-          onMouseDown={(e) => e.stopPropagation()} // Don't trigger drag from the button
-        >
-          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </button>
+        <div className="flex items-center space-x-2">
+          {/* Add delete button */}
+          <button
+            onClick={handleDelete}
+            className="p-1 hover:bg-white/20 rounded"
+            onMouseDown={(e) => e.stopPropagation()} // Prevent dragging
+            title="Delete Node"
+          >
+            <Trash2 size={16} className="text-white hover:text-red-300" />
+          </button>
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-1 hover:bg-white/20 rounded"
+            onMouseDown={(e) => e.stopPropagation()} // Don't trigger drag from the button
+          >
+            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+        </div>
       </div>
 
       {/* Node Content - Make this entire section non-draggable */}

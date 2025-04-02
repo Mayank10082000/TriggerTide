@@ -1,8 +1,22 @@
 import React, { useState } from "react";
-import { Handle, Position } from "@xyflow/react";
-import { Users, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
+import {
+  Users,
+  ChevronDown,
+  ChevronUp,
+  AlertCircle,
+  Trash2,
+} from "lucide-react";
 
-const LeadSourceNode = ({ data, isConnectable, selected }) => {
+const LeadSourceNode = ({ id, data, isConnectable, selected }) => {
+  // Add useReactFlow hook
+  const { deleteElements } = useReactFlow();
+
+  // Add handleDelete method
+  const handleDelete = () => {
+    deleteElements({ nodes: [{ id }] });
+  };
+
   const [isExpanded, setIsExpanded] = useState(true);
   const [error, setError] = useState("");
 
@@ -51,16 +65,27 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
           <Users size={18} />
           <span className="font-medium text-sm">Lead Source</span>
         </div>
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="p-1 hover:bg-white/20 rounded"
-          onMouseDown={preventDrag}
-        >
-          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-1 hover:bg-white/20 rounded"
+            onMouseDown={preventDrag}
+          >
+            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          {/* Add delete button */}
+          <button
+            onClick={handleDelete}
+            className="p-1 hover:bg-white/20 rounded"
+            onMouseDown={(e) => e.stopPropagation()} // Prevent dragging
+            title="Delete Node"
+          >
+            <Trash2 size={16} className="text-white hover:text-red-300" />
+          </button>
+        </div>
       </div>
 
-      {/* Node Content */}
+      {/* Rest of the component remains the same */}
       {isExpanded && (
         <div
           className="p-3 bg-white rounded-b-lg nodrag"
