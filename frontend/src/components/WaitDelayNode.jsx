@@ -62,7 +62,7 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
                 value={localData.delayTime}
                 onChange={handleChange}
                 min="1"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800 [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                 placeholder="24"
               />
               <select
