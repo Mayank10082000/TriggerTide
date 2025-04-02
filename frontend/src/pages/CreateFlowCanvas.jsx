@@ -24,6 +24,7 @@ import {
   Loader,
   X,
   AlertTriangle,
+  Trash2,
 } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
 
@@ -53,6 +54,7 @@ const CreateFlowCanvas = () => {
   const [editingFlowId, setEditingFlowId] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check for mobile size
   useEffect(() => {
@@ -256,6 +258,35 @@ const CreateFlowCanvas = () => {
     }
   };
 
+  // Delete flowchart
+  const handleDeleteFlow = async () => {
+    // Only allow deletion of existing flows
+    if (!editingFlowId) return;
+
+    // Show confirmation dialog
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this flow? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await axiosInstance.delete(`/flowchart/delete/${editingFlowId}`);
+      toast.success("Flowchart deleted successfully");
+      navigate("/"); // Return to homepage
+    } catch (error) {
+      console.error("Error deleting flowchart:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to delete flowchart"
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // Handle node deletion
   const onNodesDelete = (deleted) => {
     // Handle any cleanup or validation when nodes are deleted
@@ -324,6 +355,26 @@ const CreateFlowCanvas = () => {
             />
           </div>
           <div className="flex items-center space-x-3">
+            {/* Only show delete button when editing an existing flow */}
+            {editingFlowId && (
+              <button
+                onClick={handleDeleteFlow}
+                disabled={isDeleting}
+                className="flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader className="h-4 w-4 animate-spin mr-2" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Flow
+                  </>
+                )}
+              </button>
+            )}
             <button
               onClick={handleSaveFlow}
               disabled={isSaving}
