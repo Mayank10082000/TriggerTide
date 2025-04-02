@@ -3,8 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   ReactFlow,
   Background,
-  Controls,
-  MiniMap,
   useNodesState,
   useEdgesState,
   addEdge,
@@ -15,7 +13,6 @@ import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
 import {
   Save,
-  Undo,
   Home,
   PlusCircle,
   Mail,
@@ -23,7 +20,6 @@ import {
   Users,
   Loader,
   X,
-  AlertTriangle,
   Trash2,
 } from "lucide-react";
 import { axiosInstance } from "../lib/axios";
@@ -426,8 +422,6 @@ const CreateFlowCanvas = () => {
             selectionKeyCode="Shift"
             nodeDragHandle=".node-drag-handle" // This is the key addition
           >
-            <Controls />
-            <MiniMap />
             <Background color="#aaa" gap={16} />
 
             {/* Node type legend */}
