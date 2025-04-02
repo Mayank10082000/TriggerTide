@@ -81,9 +81,13 @@ const CreateFlowCanvas = () => {
         // Set flow name
         setFlowName(flowData.flowName || "My Email Sequence");
 
-        // Load nodes and edges
-        setNodes(flowData.nodes || []);
-        setEdges(flowData.edges || []);
+        // Load nodes and edges - use functional update to prevent stale state
+        setNodes((currentNodes) =>
+          currentNodes.length === 0 ? flowData.nodes || [] : currentNodes
+        );
+        setEdges((currentEdges) =>
+          currentEdges.length === 0 ? flowData.edges || [] : currentEdges
+        );
 
         toast.success("Flowchart loaded successfully");
       } catch (error) {
@@ -93,10 +97,10 @@ const CreateFlowCanvas = () => {
         setIsLoading(false);
       }
     },
-    [setNodes, setEdges]
+    // Remove setNodes and setEdges from dependencies
+    []
   );
 
-  // Then use it in useEffect
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const id = params.get("id");
@@ -183,7 +187,7 @@ const CreateFlowCanvas = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [isMobile, reactFlowInstance]); // Only depend on isMobile and reactFlowInstance
+  }, [isMobile, reactFlowInstance, nodes.length, arrangeNodesVertically]); // Add these dependencies
 
   const onDrop = useCallback(
     (event) => {
