@@ -421,8 +421,17 @@ const CreateFlowCanvas = () => {
             multiSelectionKeyCode="Control"
             selectionKeyCode="Shift"
             nodeDragHandle=".node-drag-handle" // This is the key addition
+            style={{
+              backgroundColor: "#f3f4f6", // Tailwind's gray-100
+            }}
           >
-            <Background color="#aaa" gap={16} />
+            <Background
+              color="#333"
+              variant="dots"
+              gap={16}
+              size={1} // Slightly larger dots
+              opacity={0.5} // More visible dots
+            />
 
             {/* Node type legend */}
             <Panel
