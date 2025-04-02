@@ -120,73 +120,76 @@ const CreateFlowCanvas = () => {
     event.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onDrop = useCallback((event) => {
-    event.preventDefault();
+  const onDrop = useCallback(
+    (event) => {
+      event.preventDefault();
 
-    // Get drop position
-    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-    const type = event.dataTransfer.getData("application/reactflow");
+      // Get drop position
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const type = event.dataTransfer.getData("application/reactflow");
 
-    // Return if no valid node type
-    if (!type) return;
+      // Return if no valid node type
+      if (!type) return;
 
-    // Calculate position based on the dropped position
-    const position = reactFlowInstance.screenToFlowPosition({
-      x: event.clientX - reactFlowBounds.left,
-      y: event.clientY - reactFlowBounds.top,
-    });
+      // Calculate position based on the dropped position
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      });
 
-    // Generate IDs
-    const id = `${type}-${uuidv4()}`;
+      // Generate IDs
+      const id = `${type}-${uuidv4()}`;
 
-    // Create default data based on node type
-    let data = {};
-    switch (type) {
-      case "coldEmail":
-        data = {
-          subject: "Email Subject",
-          body: "Email Content",
-          recipient: "",
-        };
-        break;
-      case "waitDelay":
-        data = {
-          delayTime: 24,
-          delayUnit: "hours",
-        };
-        break;
-      case "leadSource":
-        data = {
-          sourceName: "New Lead Source",
-          email: "",
-        };
-        break;
-    }
-
-    // Create new node with default dimensions
-    const newNode = {
-      id,
-      type,
-      position,
-      data,
-      // Set initial dimensions to prevent them from appearing too large
-      style: { width: type === "coldEmail" ? 300 : 260, height: "auto" },
-    };
-
-    // Add the new node
-    setNodes((nds) => {
-      const updatedNodes = nds.concat(newNode);
-
-      return updatedNodes;
-    });
-
-    // Fit view after adding node
-    setTimeout(() => {
-      if (reactFlowInstance) {
-        reactFlowInstance.fitView({ padding: 0.2 });
+      // Create default data based on node type
+      let data = {};
+      switch (type) {
+        case "coldEmail":
+          data = {
+            subject: "Email Subject",
+            body: "Email Content",
+            recipient: "",
+          };
+          break;
+        case "waitDelay":
+          data = {
+            delayTime: 24,
+            delayUnit: "hours",
+          };
+          break;
+        case "leadSource":
+          data = {
+            sourceName: "New Lead Source",
+            email: "",
+          };
+          break;
       }
-    }, 100);
-  });
+
+      // Create new node with default dimensions
+      const newNode = {
+        id,
+        type,
+        position,
+        data,
+        // Set initial dimensions to prevent them from appearing too large
+        style: { width: type === "coldEmail" ? 300 : 260, height: "auto" },
+      };
+
+      // Add the new node
+      setNodes((nds) => {
+        const updatedNodes = nds.concat(newNode);
+
+        return updatedNodes;
+      });
+
+      // Fit view after adding node
+      setTimeout(() => {
+        if (reactFlowInstance) {
+          reactFlowInstance.fitView({ padding: 0.2 });
+        }
+      }, 100);
+    },
+    [reactFlowInstance, reactFlowWrapper, setNodes]
+  );
 
   // Save flowchart to backend
   const handleSaveFlow = async () => {
