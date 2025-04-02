@@ -5,9 +5,23 @@ import { Clock, ChevronDown, ChevronUp } from "lucide-react";
 const WaitDelayNode = ({ data, isConnectable, selected }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
+  // Create local state for inputs
+  const [localData, setLocalData] = useState({
+    delayTime: data.delayTime || 24,
+    delayUnit: data.delayUnit || "hours",
+  });
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Update local state for immediate UI feedback
+    setLocalData((prev) => ({
+      ...prev,
+      [name]: name === "delayTime" ? Number(value) : value,
+    }));
+
+    // Also update the node data
     data[name] = name === "delayTime" ? Number(value) : value;
   };
 
@@ -45,17 +59,17 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
                 <input
                   type="number"
                   name="delayTime"
-                  value={data.delayTime || 24}
+                  value={localData.delayTime}
                   onChange={handleChange}
                   min="1"
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
                   placeholder="24"
                 />
                 <select
                   name="delayUnit"
-                  value={data.delayUnit || "hours"}
+                  value={localData.delayUnit}
                   onChange={handleChange}
-                  className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
+                  className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
                 >
                   <option value="minutes">Minutes</option>
                   <option value="hours">Hours</option>

@@ -6,9 +6,23 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [error, setError] = useState("");
 
+  // Create local state for inputs
+  const [localData, setLocalData] = useState({
+    sourceName: data.sourceName || "",
+    email: data.email || "",
+  });
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Update local state for immediate UI feedback
+    setLocalData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Also update the node data
     data[name] = value;
 
     // Validate email format
@@ -51,9 +65,9 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
               </label>
               <input
                 name="sourceName"
-                value={data.sourceName || ""}
+                value={localData.sourceName}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-800"
                 placeholder="e.g., Website Leads"
               />
             </div>
@@ -66,11 +80,11 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
               <div className="relative">
                 <input
                   name="email"
-                  value={data.email || ""}
+                  value={localData.email}
                   onChange={handleChange}
                   className={`w-full px-3 py-2 text-sm border ${
                     error ? "border-red-500" : "border-gray-300"
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-800`}
                   placeholder="user@example.com"
                 />
                 {error && (

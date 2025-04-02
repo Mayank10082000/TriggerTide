@@ -6,9 +6,24 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [recipientError, setRecipientError] = useState("");
 
+  // Create local state for inputs to ensure UI updates immediately
+  const [localData, setLocalData] = useState({
+    subject: data.subject || "",
+    body: data.body || "",
+    recipient: data.recipient || "",
+  });
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Update local state for immediate UI feedback
+    setLocalData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Also update the node data
     data[name] = value;
 
     // Validate email format if provided
@@ -51,9 +66,9 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
               </label>
               <input
                 name="subject"
-                value={data.subject || ""}
+                value={localData.subject}
                 onChange={handleChange}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800"
                 placeholder="Enter email subject"
               />
             </div>
@@ -65,9 +80,9 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
               </label>
               <textarea
                 name="body"
-                value={data.body || ""}
+                value={localData.body}
                 onChange={handleChange}
-                className="w-full h-24 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full h-24 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white text-gray-800"
                 placeholder="Write your email content here..."
               />
             </div>
@@ -80,11 +95,11 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
               <div className="relative">
                 <input
                   name="recipient"
-                  value={data.recipient || ""}
+                  value={localData.recipient}
                   onChange={handleChange}
                   className={`w-full px-3 py-2 text-sm border ${
                     recipientError ? "border-red-500" : "border-gray-300"
-                  } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800`}
                   placeholder="recipient@example.com (optional)"
                 />
                 {recipientError && (
