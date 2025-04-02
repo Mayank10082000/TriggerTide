@@ -42,7 +42,7 @@ const App = () => {
         />
         <Route
           path="/login"
-          element={!authUser ? <LoginPage /> : <Navigate to="/login" />}
+          element={!authUser ? <LoginPage /> : <Navigate to="/" />}
         />
         <Route
           path="/create-flow"
