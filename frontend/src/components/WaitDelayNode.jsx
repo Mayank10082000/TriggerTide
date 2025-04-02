@@ -20,6 +20,11 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
     data[name] = name === "delayTime" ? Number(value) : value;
   };
 
+  // Prevent node dragging when interacting with inputs
+  const preventDrag = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       className={`rounded-lg shadow-md border transition-shadow ${
@@ -27,8 +32,8 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
       }`}
       style={{ minWidth: 220, maxWidth: 260 }}
     >
-      {/* Node Header */}
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-2 rounded-t-lg flex items-center justify-between text-white">
+      {/* Node Header - This will be the draggable handle */}
+      <div className="node-drag-handle bg-gradient-to-r from-purple-500 to-indigo-600 p-2 rounded-t-lg flex items-center justify-between text-white cursor-move">
         <div className="flex items-center space-x-2">
           <Clock size={18} />
           <input
@@ -43,12 +48,18 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
             }}
             className="bg-transparent text-white text-sm font-medium w-full focus:outline-none placeholder-white/70"
             placeholder="Wait/Delay"
+            onMouseDown={preventDrag}
+            onClick={preventDrag}
           />
         </div>
       </div>
 
       {/* Node Content */}
-      <div className="p-3 bg-white rounded-b-lg">
+      <div
+        className="p-3 bg-white rounded-b-lg nodrag"
+        onMouseDown={preventDrag}
+        onClick={preventDrag}
+      >
         <div className="space-y-3">
           {/* Delay Time Input */}
           <div>
@@ -62,6 +73,8 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
                 value={localData.delayTime}
                 onChange={handleChange}
                 min="1"
+                onMouseDown={preventDrag}
+                onClick={preventDrag}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800 [&::-webkit-inner-spin-button]:hidden [&::-webkit-outer-spin-button]:hidden"
                 placeholder="24"
               />
@@ -69,6 +82,8 @@ const WaitDelayNode = ({ data, isConnectable, selected }) => {
                 name="delayUnit"
                 value={localData.delayUnit}
                 onChange={handleChange}
+                onMouseDown={preventDrag}
+                onClick={preventDrag}
                 className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white text-gray-800"
               >
                 <option value="minutes">Minutes</option>

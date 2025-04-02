@@ -34,6 +34,11 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
     }
   };
 
+  // Prevent node dragging when interacting with inputs
+  const preventDrag = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       className={`rounded-lg shadow-md border transition-shadow ${
@@ -41,8 +46,8 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
       }`}
       style={{ minWidth: 280, maxWidth: 320 }}
     >
-      {/* Node Header */}
-      <div className="bg-gradient-to-r from-blue-500 to-sky-600 p-2 rounded-t-lg flex items-center justify-between text-white">
+      {/* Node Header - This will be the draggable handle */}
+      <div className="node-drag-handle bg-gradient-to-r from-blue-500 to-sky-600 p-2 rounded-t-lg flex items-center justify-between text-white cursor-move">
         <div className="flex items-center space-x-2">
           <Mail size={18} />
           <span className="font-medium text-sm">Cold Email</span>
@@ -50,14 +55,19 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="p-1 hover:bg-white/20 rounded"
+          onMouseDown={(e) => e.stopPropagation()} // Don't trigger drag from the button
         >
           {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
       </div>
 
-      {/* Node Content */}
+      {/* Node Content - Make this entire section non-draggable */}
       {isExpanded && (
-        <div className="p-3 bg-white rounded-b-lg">
+        <div
+          className="p-3 bg-white rounded-b-lg nodrag"
+          onMouseDown={preventDrag}
+          onClick={preventDrag}
+        >
           <div className="space-y-3">
             {/* Subject Line */}
             <div>
@@ -68,6 +78,8 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
                 name="subject"
                 value={localData.subject}
                 onChange={handleChange}
+                onMouseDown={preventDrag}
+                onClick={preventDrag}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800"
                 placeholder="Enter email subject"
               />
@@ -82,6 +94,8 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
                 name="body"
                 value={localData.body}
                 onChange={handleChange}
+                onMouseDown={preventDrag}
+                onClick={preventDrag}
                 className="w-full h-24 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white text-gray-800"
                 placeholder="Write your email content here..."
               />
@@ -97,6 +111,8 @@ const ColdEmailNode = ({ data, isConnectable, selected }) => {
                   name="recipient"
                   value={localData.recipient}
                   onChange={handleChange}
+                  onMouseDown={preventDrag}
+                  onClick={preventDrag}
                   className={`w-full px-3 py-2 text-sm border ${
                     recipientError ? "border-red-500" : "border-gray-300"
                   } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-800`}

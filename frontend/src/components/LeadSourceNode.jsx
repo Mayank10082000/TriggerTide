@@ -33,6 +33,11 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
     }
   };
 
+  // Prevent node dragging when interacting with inputs
+  const preventDrag = (e) => {
+    e.stopPropagation();
+  };
+
   return (
     <div
       className={`rounded-lg shadow-md border transition-shadow ${
@@ -40,8 +45,8 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
       }`}
       style={{ minWidth: 240, maxWidth: 280 }}
     >
-      {/* Node Header */}
-      <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-2 rounded-t-lg flex items-center justify-between text-white">
+      {/* Node Header - This will be the draggable handle */}
+      <div className="node-drag-handle bg-gradient-to-r from-emerald-500 to-green-600 p-2 rounded-t-lg flex items-center justify-between text-white cursor-move">
         <div className="flex items-center space-x-2">
           <Users size={18} />
           <span className="font-medium text-sm">Lead Source</span>
@@ -49,6 +54,7 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="p-1 hover:bg-white/20 rounded"
+          onMouseDown={preventDrag}
         >
           {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
@@ -56,7 +62,11 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
 
       {/* Node Content */}
       {isExpanded && (
-        <div className="p-3 bg-white rounded-b-lg">
+        <div
+          className="p-3 bg-white rounded-b-lg nodrag"
+          onMouseDown={preventDrag}
+          onClick={preventDrag}
+        >
           <div className="space-y-3">
             {/* Source Name Input */}
             <div>
@@ -67,6 +77,8 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
                 name="sourceName"
                 value={localData.sourceName}
                 onChange={handleChange}
+                onMouseDown={preventDrag}
+                onClick={preventDrag}
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-800"
                 placeholder="e.g., Website Leads"
               />
@@ -82,6 +94,8 @@ const LeadSourceNode = ({ data, isConnectable, selected }) => {
                   name="email"
                   value={localData.email}
                   onChange={handleChange}
+                  onMouseDown={preventDrag}
+                  onClick={preventDrag}
                   className={`w-full px-3 py-2 text-sm border ${
                     error ? "border-red-500" : "border-gray-300"
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-800`}

@@ -373,6 +373,7 @@ const CreateFlowCanvas = () => {
             deleteKeyCode="Delete"
             multiSelectionKeyCode="Control"
             selectionKeyCode="Shift"
+            nodeDragHandle=".node-drag-handle" // This is the key addition
           >
             <Controls />
             <MiniMap />
