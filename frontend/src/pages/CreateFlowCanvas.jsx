@@ -97,10 +97,8 @@ const CreateFlowCanvas = () => {
         setIsLoading(false);
       }
     },
-    // Remove setNodes and setEdges from dependencies
-    []
+    [setNodes, setEdges, setFlowName, setIsLoading]
   );
-
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const id = params.get("id");
@@ -122,162 +120,73 @@ const CreateFlowCanvas = () => {
     event.dataTransfer.dropEffect = "move";
   }, []);
 
-  // Function to arrange nodes in a vertical layout
-  const arrangeNodesVertically = useCallback(() => {
-    if (!reactFlowInstance || nodes.length === 0) return;
+  const onDrop = useCallback((event) => {
+    event.preventDefault();
 
-    // Clone nodes to avoid direct mutation
-    const updatedNodes = [...nodes];
+    // Get drop position
+    const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+    const type = event.dataTransfer.getData("application/reactflow");
 
-    // Sort nodes based on type priority: leadSource -> waitDelay -> coldEmail
-    // and then by their original y position as a tiebreaker
-    updatedNodes.sort((a, b) => {
-      const typePriority = { leadSource: 1, waitDelay: 2, coldEmail: 3 };
-      const aPriority = typePriority[a.type] || 99;
-      const bPriority = typePriority[b.type] || 99;
+    // Return if no valid node type
+    if (!type) return;
 
-      if (aPriority !== bPriority) return aPriority - bPriority;
-      return a.position.y - b.position.y;
+    // Calculate position based on the dropped position
+    const position = reactFlowInstance.screenToFlowPosition({
+      x: event.clientX - reactFlowBounds.left,
+      y: event.clientY - reactFlowBounds.top,
     });
 
-    // Calculate the center x position based on the wrapper width
-    const centerX = reactFlowWrapper.current
-      ? reactFlowWrapper.current.getBoundingClientRect().width / 2 - 130
-      : 150;
+    // Generate IDs
+    const id = `${type}-${uuidv4()}`;
 
-    // Assign vertical positions
-    const positionedNodes = updatedNodes.map((node, index) => ({
-      ...node,
-      position: {
-        x: centerX,
-        y: 100 + index * 220, // Vertical spacing between nodes
-      },
-    }));
-
-    // Create new edges to connect nodes in vertical order
-    const newEdges = [];
-    if (positionedNodes.length > 1) {
-      for (let i = 0; i < positionedNodes.length - 1; i++) {
-        newEdges.push({
-          id: `e-${positionedNodes[i].id}-${positionedNodes[i + 1].id}`,
-          source: positionedNodes[i].id,
-          target: positionedNodes[i + 1].id,
-        });
-      }
+    // Create default data based on node type
+    let data = {};
+    switch (type) {
+      case "coldEmail":
+        data = {
+          subject: "Email Subject",
+          body: "Email Content",
+          recipient: "",
+        };
+        break;
+      case "waitDelay":
+        data = {
+          delayTime: 24,
+          delayUnit: "hours",
+        };
+        break;
+      case "leadSource":
+        data = {
+          sourceName: "New Lead Source",
+          email: "",
+        };
+        break;
     }
 
-    // Use the ReactFlow setNodes/setEdges with functional form to avoid stale closures
-    setNodes(positionedNodes);
-    setEdges(newEdges);
+    // Create new node with default dimensions
+    const newNode = {
+      id,
+      type,
+      position,
+      data,
+      // Set initial dimensions to prevent them from appearing too large
+      style: { width: type === "coldEmail" ? 300 : 260, height: "auto" },
+    };
 
-    // Fit view after rearranging
+    // Add the new node
+    setNodes((nds) => {
+      const updatedNodes = nds.concat(newNode);
+
+      return updatedNodes;
+    });
+
+    // Fit view after adding node
     setTimeout(() => {
-      reactFlowInstance.fitView({ padding: 0.2 });
-    }, 50);
-  }, [nodes, reactFlowInstance, setNodes, setEdges]);
-
-  // Call arrangeNodesVertically when mobile status changes or when nodes are loaded initially
-  useEffect(() => {
-    // Only trigger when mobile is true AND we have nodes AND reactFlowInstance exists
-    if (isMobile && nodes.length > 1 && reactFlowInstance) {
-      // We need a flag to prevent infinite loops
-      const timer = setTimeout(() => {
-        arrangeNodesVertically();
-      }, 200);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isMobile, reactFlowInstance, nodes.length, arrangeNodesVertically]); // Add these dependencies
-
-  const onDrop = useCallback(
-    (event) => {
-      event.preventDefault();
-
-      // Get drop position
-      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const type = event.dataTransfer.getData("application/reactflow");
-
-      // Return if no valid node type
-      if (!type) return;
-
-      // Calculate position - for mobile, we'll override this with vertical layout
-      let position;
-
-      if (isMobile) {
-        // For mobile, position doesn't matter as we'll rearrange vertically
-        position = { x: 150, y: 100 + nodes.length * 220 };
-      } else {
-        // For desktop, use the dropped position
-        position = reactFlowInstance.screenToFlowPosition({
-          x: event.clientX - reactFlowBounds.left,
-          y: event.clientY - reactFlowBounds.top,
-        });
+      if (reactFlowInstance) {
+        reactFlowInstance.fitView({ padding: 0.2 });
       }
-
-      // Generate IDs
-      const id = `${type}-${uuidv4()}`;
-
-      // Create default data based on node type
-      let data = {};
-      switch (type) {
-        case "coldEmail":
-          data = {
-            subject: "Email Subject",
-            body: "Email Content",
-            recipient: "",
-          };
-          break;
-        case "waitDelay":
-          data = {
-            delayTime: 24,
-            delayUnit: "hours",
-          };
-          break;
-        case "leadSource":
-          data = {
-            sourceName: "New Lead Source",
-            email: "",
-          };
-          break;
-      }
-
-      // Create new node with default dimensions
-      const newNode = {
-        id,
-        type,
-        position,
-        data,
-        // Set initial dimensions to prevent them from appearing too large
-        style: { width: type === "coldEmail" ? 300 : 260, height: "auto" },
-      };
-
-      // Add the new node
-      setNodes((nds) => {
-        const updatedNodes = nds.concat(newNode);
-
-        // If on mobile, trigger vertical arrangement after adding the node
-        if (isMobile) {
-          setTimeout(() => arrangeNodesVertically(), 50);
-        }
-
-        return updatedNodes;
-      });
-
-      // Fit view after adding node
-      setTimeout(() => {
-        if (reactFlowInstance) {
-          reactFlowInstance.fitView({ padding: 0.2 });
-        }
-      }, 100);
-    },
-    [
-      reactFlowInstance,
-      setNodes,
-      nodes.length,
-      isMobile,
-      arrangeNodesVertically,
-    ]
-  );
+    }, 100);
+  });
 
   // Save flowchart to backend
   const handleSaveFlow = async () => {
@@ -355,12 +264,6 @@ const CreateFlowCanvas = () => {
     navigate("/");
   };
 
-  // Add a button to arrange nodes vertically (especially useful for mobile)
-  const handleArrangeVertically = () => {
-    arrangeNodesVertically();
-    toast.success("Arranged nodes vertically");
-  };
-
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50">
@@ -418,30 +321,6 @@ const CreateFlowCanvas = () => {
             />
           </div>
           <div className="flex items-center space-x-3">
-            {/* Arrange Vertically Button - Visible on all devices but especially useful for mobile */}
-            <button
-              onClick={handleArrangeVertically}
-              className="items-center bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-all hidden sm:flex"
-              title="Arrange Nodes Vertically"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="mr-1"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <polyline points="19 12 12 19 5 12"></polyline>
-              </svg>
-              <span className="hidden md:inline">Arrange</span>
-            </button>
-
             <button
               onClick={handleSaveFlow}
               disabled={isSaving}
