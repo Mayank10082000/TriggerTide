@@ -112,6 +112,18 @@ const CreateFlowCanvas = () => {
     [setEdges]
   );
 
+  const onEdgeDelete = useCallback(
+    (deletedEdges) => {
+      setEdges((currentEdges) =>
+        currentEdges.filter(
+          (edge) =>
+            !deletedEdges.some((deletedEdge) => deletedEdge.id === edge.id)
+        )
+      );
+    },
+    [setEdges]
+  );
+
   // Handle node dragging from sidebar to canvas
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -420,6 +432,7 @@ const CreateFlowCanvas = () => {
             deleteKeyCode="Delete"
             multiSelectionKeyCode="Control"
             selectionKeyCode="Shift"
+            onEdgeDelete={onEdgeDelete}
             nodeDragHandle=".node-drag-handle" // This is the key addition
             style={{
               backgroundColor: "#f3f4f6", // Tailwind's gray-100
