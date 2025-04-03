@@ -4,6 +4,12 @@
 
 Trigger Tide is a powerful email marketing sequence builder that allows you to design and implement automated email campaigns using an intuitive visual flowchart interface.
 
+## 🔗 Live Demo
+
+**[Try Trigger Tide Now](https://triggertide.onrender.com)**
+
+Experience the application live without setting up locally!
+
 ## ✨ Features
 
 - **Visual Flowchart Editor**: Design your email sequences using a drag-and-drop interface
@@ -19,6 +25,7 @@ Trigger Tide is a powerful email marketing sequence builder that allows you to d
 ## 🛠️ Technologies
 
 ### Frontend
+
 - **React**: UI library built with Vite
 - **ReactFlow**: Library for building node-based editors and flowcharts
 - **Zustand**: State management
@@ -28,6 +35,7 @@ Trigger Tide is a powerful email marketing sequence builder that allows you to d
 - **React Hot Toast**: Notifications
 
 ### Backend
+
 - **Node.js**: Runtime environment
 - **Express**: Web framework
 - **MongoDB** & **Mongoose**: Database and ODM
@@ -101,18 +109,21 @@ FRONTEND_URL=http://localhost:5173
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/triggertide.git
 cd triggertide
 ```
 
 2. Install backend dependencies:
+
 ```bash
 cd backend
 npm install
 ```
 
 3. Install frontend dependencies:
+
 ```bash
 cd ../frontend
 npm install
@@ -121,12 +132,14 @@ npm install
 ### Running the application
 
 1. Start the backend server:
+
 ```bash
 cd backend
 npm run dev
 ```
 
 2. Start the frontend development server:
+
 ```bash
 cd frontend
 npm run dev
@@ -200,6 +213,18 @@ npm test
 - CSRF protection implemented
 - XSS protection with input sanitization
 
+## 🚀 Deployment
+
+The application is deployed and running live at:
+
+**[https://triggertide.onrender.com](https://triggertide.onrender.com)**
+
+### Deployment Notes
+
+- Hosted on [Render](https://render.com) platform
+- Uses MongoDB Atlas for the database
+- Automatic deployment from the main branch
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -214,7 +239,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgements
 
-- [Future Blink](https://careers.futureblink.com) for the project inspiration
 - [ReactFlow](https://reactflow.dev)
 - [Agenda](https://github.com/agenda/agenda)
 - [Nodemailer](https://nodemailer.com)
+- [Render](https://render.com) for hosting the application
