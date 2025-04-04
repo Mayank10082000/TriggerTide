@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { KeyRound, Lock, Eye, EyeOff, AlertCircle, Loader } from "lucide-react";
 import toast from "react-hot-toast";
+import AnimatedAuthBackground from "../components/AnimatedAuthBackground";
 
 const ResetPasswordPage = () => {
   const [formData, setFormData] = useState({
@@ -90,32 +91,31 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 to-purple-50 px-4 pt-20 pb-10">
+    <AnimatedAuthBackground>
       <div className="w-full max-w-md">
         {/* Card Container */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300">
-          {/* Header with Gradient - reduced padding */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 py-4 rounded-t-lg">
-            <h2 className="text-lg font-bold text-white text-center flex items-center justify-center gap-2">
-              <KeyRound className="h-4 w-4" />
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden transform transition-all hover:scale-[1.01] duration-300 border border-white/20">
+          {/* Header with Gradient */}
+          <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-5">
+            <h2 className="text-xl font-bold text-white text-center flex items-center justify-center gap-2">
+              <KeyRound className="h-5 w-5" />
               Reset Your Password
             </h2>
-            <p className="text-blue-100 text-center mt-1 text-xs">
+            <p className="text-blue-100 text-center mt-1 text-sm">
               Create a new secure password
             </p>
           </div>
 
           {/* Form Container */}
-          <div className="p-3">
-            {/* Reduced spacing between form elements */}
-            <form onSubmit={handleSubmit} className="space-y-2">
+          <div className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* New Password Field */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <label
                   htmlFor="newPassword"
-                  className="text-xs font-medium text-gray-700 flex items-center gap-1"
+                  className="text-sm font-medium text-gray-700 flex items-center gap-1"
                 >
-                  <Lock className="h-3 w-3" />
+                  <Lock className="h-4 w-4" />
                   New Password
                 </label>
                 <div className="relative">
@@ -125,11 +125,11 @@ const ResetPasswordPage = () => {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 text-sm border ${
+                    className={`w-full px-4 py-3 border ${
                       formErrors.newPassword
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
+                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white/80 backdrop-blur-sm`}
                     placeholder="Enter new password"
                   />
                   <button
@@ -138,24 +138,24 @@ const ResetPasswordPage = () => {
                     onClick={() => setShowNewPassword(!showNewPassword)}
                   >
                     {showNewPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff className="h-5 w-5" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-5 w-5" />
                     )}
                   </button>
                 </div>
-                <p className="text-[10px] text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   Password must be at least 6 characters long
                 </p>
               </div>
 
               {/* Confirm Password Field */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <label
                   htmlFor="confirmNewPassword"
-                  className="text-xs font-medium text-gray-700 flex items-center gap-1"
+                  className="text-sm font-medium text-gray-700 flex items-center gap-1"
                 >
-                  <Lock className="h-3 w-3" />
+                  <Lock className="h-4 w-4" />
                   Confirm New Password
                 </label>
                 <div className="relative">
@@ -165,11 +165,11 @@ const ResetPasswordPage = () => {
                     name="confirmNewPassword"
                     value={formData.confirmNewPassword}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 text-sm border ${
+                    className={`w-full px-4 py-3 border ${
                       formErrors.confirmNewPassword
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white`}
+                    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-gray-800 bg-white/80 backdrop-blur-sm`}
                     placeholder="Confirm new password"
                   />
                   <button
@@ -180,9 +180,9 @@ const ResetPasswordPage = () => {
                     }
                   >
                     {showconfirmNewPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff className="h-5 w-5" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-5 w-5" />
                     )}
                   </button>
                 </div>
@@ -192,35 +192,38 @@ const ResetPasswordPage = () => {
               <button
                 type="submit"
                 disabled={isResetPassword}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center mt-6"
               >
                 {isResetPassword ? (
                   <>
-                    <Loader className="animate-spin mr-2 h-4 w-4" />
+                    <Loader className="animate-spin mr-2 h-5 w-5" />
                     Resetting Password...
                   </>
                 ) : (
                   <>
-                    <KeyRound className="mr-2 h-4 w-4" />
+                    <KeyRound className="mr-2 h-5 w-5" />
                     Reset Password
                   </>
                 )}
               </button>
 
               {/* Login Link */}
-              <div className="text-center mt-2">
-                <Link
-                  to="/login"
-                  className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300 text-xs"
-                >
-                  Back to Login
-                </Link>
+              <div className="text-center mt-4">
+                <p className="text-gray-600 text-sm">
+                  Remember your password?{" "}
+                  <Link
+                    to="/login"
+                    className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300"
+                  >
+                    Back to Login
+                  </Link>
+                </p>
               </div>
             </form>
           </div>
         </div>
       </div>
-    </div>
+    </AnimatedAuthBackground>
   );
 };
 
