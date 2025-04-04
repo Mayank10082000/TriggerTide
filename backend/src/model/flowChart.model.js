@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { validateFlowNodes } from "../middleware/nodeValidation.middleware.js";
 
 // Define the base node schema shape
 const baseNodeSchema = new mongoose.Schema(
@@ -13,9 +14,9 @@ const baseNodeSchema = new mongoose.Schema(
       x: { type: Number, required: true },
       y: { type: Number, required: true },
     },
-    data: { type: mongoose.Schema.Types.Mixed, required: true }, // Data type mixed gives flexibility for different format of data from the frontend
+    data: { type: mongoose.Schema.Types.Mixed, required: true },
   },
-  { _id: false } // Don't create _id for embedded documents as it will take extra space and we wont be accessing them individually
+  { _id: false }
 );
 
 // Define the flow schema with embedded nodes
@@ -40,46 +41,8 @@ const FlowSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Add validation for the specific node types
-FlowSchema.pre("validate", function (next) {
-  // Validate each node based on its type
-  if (this.nodes) {
-    for (const node of this.nodes) {
-      if (node.type === "coldEmail") {
-        // Validate cold email nodes
-        if (!node.data || !node.data.subject || !node.data.body) {
-          return next(
-            new Error(`Cold email node requires subject and body: ${node.id}`)
-          );
-        }
-      } else if (node.type === "waitDelay") {
-        // Validate wait/delay nodes
-        if (!node.data || typeof node.data.delayTime !== "number") {
-          return next(
-            new Error(
-              `Wait/delay node requires a numeric delayTime: ${node.id}`
-            )
-          );
-        }
-        // Validate delayUnit if provided
-        if (
-          node.data.delayUnit &&
-          !["minutes", "hours", "days"].includes(node.data.delayUnit)
-        ) {
-          return next(new Error(`Invalid delay unit in node: ${node.id}`));
-        }
-      } else if (node.type === "leadSource") {
-        // Validate lead source nodes
-        if (!node.data || !node.data.sourceName) {
-          return next(
-            new Error(`Lead source node requires a sourceName: ${node.id}`)
-          );
-        }
-      }
-    }
-  }
-  next();
-});
+// Apply the node validation middleware
+FlowSchema.pre("validate", validateFlowNodes);
 
 const Flow = mongoose.model("Flow", FlowSchema);
 
